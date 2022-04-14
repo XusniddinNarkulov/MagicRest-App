@@ -2,14 +2,7 @@ const { async } = require('regenerator-runtime');
 
 import * as model from './model.js';
 import recipeView from './views/recipeView.js';
-
-// const timeout = function (s) {
-//   return new Promise(function (_, reject) {
-//     setTimeout(function () {
-//       reject(new Error(`Request took too long! Timeout after ${s} second`));
-//     }, s * 1000);
-//   });
-// };
+import searchView from './views/searchView.js';
 
 const recipeShow = async function () {
   try {
@@ -21,16 +14,14 @@ const recipeShow = async function () {
 
     recipeView.render(model.state.recipe);
   } catch (err) {
-    alert(err);
+    recipeView.errorNotify();
   }
 };
-recipeShow();
+// recipeShow();
 
-// {quantity: 1, unit: '', description: 'tbsp. canola or olive oil'}
+recipeView.addHandleEvent(recipeShow);
 
-['hashchange', 'load'].map(val => {
-  window.addEventListener(val, recipeShow);
-});
+searchView.addHandleEvent(searchView.getValue);
 
 // window.addEventListener('hashchange', recipeShow);
 // window.addEventListener('load', recipeShow);
@@ -40,19 +31,3 @@ recipeShow();
 
 ///////////////////////////////////////
 // console.log(window.location);
-let arr = [
-  [1, 2, 3],
-  [4, 5, 6],
-];
-
-function myFunction(...arrays) {
-  let ar;
-  let arr;
-  for (let el of arrays) {
-    [ar] +=[...el] ;
-    arr.push(ar)
-  }
-  return arr;
-}
-
-console.log(myFunction([1, 2, 3], [4, 5, 6]));

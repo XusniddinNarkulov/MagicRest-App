@@ -6,17 +6,9 @@ export const state = {
   recipe: {},
 };
 
-const timeout = function (s) {
-  return new Promise(function (_, reject) {
-    setTimeout(function () {
-      reject(new Error(`Request took too long! Timeout after ${s} second`));
-    }, s * 1000);
-  });
-};
-
 export const loadRecipe = async function (id) {
   try {
-    const json = await Promise.race([getJson(API_URL + id), timeout(5)]);
+    const json = await getJson(API_URL + id);
     const obj = json.data.recipe;
     state.recipe = {
       publisher: obj.publisher,
@@ -29,6 +21,6 @@ export const loadRecipe = async function (id) {
       servings: obj.servings,
     };
   } catch (err) {
-    alert(err);
+    throw err;
   }
 };

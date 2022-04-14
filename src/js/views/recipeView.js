@@ -3,6 +3,7 @@ import icons from '../../img/icons.svg';
 class RecipeView {
   #parentElement = document.querySelector('.recipe');
   #data;
+  #errorMessage = `Siz qidirayotgan ma'lumot topilmadi, iltimos qayta urinib ko'ring`;
 
   render(data) {
     this.#data = data;
@@ -12,8 +13,29 @@ class RecipeView {
     this.#generatorHTML(this.#data);
   }
 
+  addHandleEvent(handle) {
+    ['hashchange', 'load'].map(val => {
+      window.addEventListener(val, handle);
+    });
+  }
+
   #clearHTML() {
     this.#parentElement.innerHTML = '';
+  }
+
+  errorNotify() {
+    const html = `
+  <div class="error">
+    <div>
+      <svg>
+        <use href="${icons}#icon-alert-triangle"></use>
+      </svg>
+    </div>
+    <p>${this.#errorMessage}</p>
+  </div>
+    `;
+    this.#clearHTML();
+    this.#parentElement.insertAdjacentHTML('afterbegin', html);
   }
 
   spinner() {
