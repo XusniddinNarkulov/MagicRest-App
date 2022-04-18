@@ -3,14 +3,18 @@ class SearchView {
 
   getValue() {
     const val = document.querySelector('.search__field').value;
+    this.#clearInput();
     return val;
   }
 
-  addHandleEvent(data) {
+  #clearInput() {
+    document.querySelector('.search__field').value = '';
+  }
+
+  addHandlerSearch(handle) {
     this.#parentElement.addEventListener('submit', function (e) {
       e.preventDefault();
-
-      console.log(data());
+      handle();
     });
   }
 }

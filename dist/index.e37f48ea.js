@@ -524,6 +524,7 @@ const { async  } = require('regenerator-runtime');
 const recipeShow = async function() {
     try {
         const id = window.location.hash.slice(1);
+        if (!id) return;
         _recipeViewJsDefault.default.spinner();
         await _modelJs.loadRecipe(id);
         _recipeViewJsDefault.default.render(_modelJs.state.recipe);
@@ -532,26 +533,45 @@ const recipeShow = async function() {
     }
 };
 // recipeShow();
-_recipeViewJsDefault.default.addHandleEvent(recipeShow);
-_searchViewJsDefault.default.addHandleEvent(_searchViewJsDefault.default.getValue); // window.addEventListener('hashchange', recipeShow);
+const controlSearchResults = async function() {
+    try {
+        const query = _searchViewJsDefault.default.getValue();
+        if (!query) return;
+        await _modelJs.loadSearchResults(query);
+        console.log(_modelJs.state.search.results);
+    } catch (err) {
+        console.log(err);
+    }
+};
+const init = function() {
+    _recipeViewJsDefault.default.addHandleEvent(recipeShow);
+    _searchViewJsDefault.default.addHandlerSearch(controlSearchResults);
+};
+init(); // window.addEventListener('hashchange', recipeShow);
  // window.addEventListener('load', recipeShow);
  //
  // https://forkify-api.herokuapp.com/v2
  ///////////////////////////////////////
  // console.log(window.location);
 
-},{"./model.js":"Y4A21","./views/recipeView.js":"l60JC","regenerator-runtime":"dXNgZ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./views/searchView.js":"9OQAM"}],"Y4A21":[function(require,module,exports) {
+},{"./model.js":"Y4A21","./views/recipeView.js":"l60JC","./views/searchView.js":"9OQAM","regenerator-runtime":"dXNgZ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"Y4A21":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "state", ()=>state
 );
 parcelHelpers.export(exports, "loadRecipe", ()=>loadRecipe
 );
+parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults
+);
 var _regeneratorRuntime = require("regenerator-runtime");
 var _configJs = require("./config.js");
 var _helpersJs = require("./helpers.js");
 const state = {
-    recipe: {}
+    recipe: {},
+    search: {
+        query: '',
+        results: []
+    }
 };
 const loadRecipe = async function(id) {
     try {
@@ -571,6 +591,24 @@ const loadRecipe = async function(id) {
         throw err;
     }
 };
+const loadSearchResults = async function(foodName) {
+    try {
+        state.search.query = foodName;
+        const data = await _helpersJs.getJson(`${_configJs.API_URL}?search=${foodName}`);
+        // console.log(data);
+        state.search.results = data.data.recipes.map((val)=>{
+            return {
+                id: val.id,
+                title: val.title,
+                publisher: val.publisher,
+                image: val.image
+            };
+        });
+    } catch (err) {
+        throw err;
+    }
+};
+loadSearchResults('pizza');
 
 },{"regenerator-runtime":"dXNgZ","./config.js":"k5Hzs","./helpers.js":"hGI1E","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dXNgZ":[function(require,module,exports) {
 /**
@@ -1204,7 +1242,7 @@ const getJson = async function(url) {
     }
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./config.js":"k5Hzs"}],"l60JC":[function(require,module,exports) {
+},{"./config.js":"k5Hzs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"l60JC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _iconsSvg = require("../../img/icons.svg");
@@ -1396,12 +1434,16 @@ class SearchView {
     #parentElement = document.querySelector('.search');
     getValue() {
         const val = document.querySelector('.search__field').value;
+        this.#clearInput();
         return val;
     }
-    addHandleEvent(data) {
+     #clearInput() {
+        document.querySelector('.search__field').value = '';
+    }
+    addHandlerSearch(handle) {
         this.#parentElement.addEventListener('submit', function(e) {
             e.preventDefault();
-            console.log(data());
+            handle();
         });
     }
 }
