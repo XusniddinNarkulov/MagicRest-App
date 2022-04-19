@@ -46,4 +46,4 @@ export const loadSearchResults = async function (foodName) {
     throw err;
   }
 };
-loadSearchResults('pizza');
+// loadSearchResults('pizza');

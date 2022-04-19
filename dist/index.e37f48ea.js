@@ -607,8 +607,7 @@ const loadSearchResults = async function(foodName) {
     } catch (err) {
         throw err;
     }
-};
-loadSearchResults('pizza');
+}; // loadSearchResults('pizza');
 
 },{"regenerator-runtime":"dXNgZ","./config.js":"k5Hzs","./helpers.js":"hGI1E","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dXNgZ":[function(require,module,exports) {
 /**
